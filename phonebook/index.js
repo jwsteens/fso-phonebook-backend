@@ -8,7 +8,17 @@ let persons = data
 const getRandomId = () => String(Math.floor(Math.random() * 999999999))
 
 app.use(express.json())
-app.use(morgan('tiny'))
+
+morgan.token('json', (req) => {
+  // Log the JSON body only for POST requests
+  if (req.method === 'POST' && req.body) {
+    return JSON.stringify(req.body)
+  }
+  return ''
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json'))
+
 
 app.get('/', ( request, response ) => {
   response.send(`<h1>Hello, world!</h1>`)
