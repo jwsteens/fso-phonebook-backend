@@ -2,6 +2,8 @@ import express from "express"
 import data from './data.json' assert { type: 'json' }
 const app = express()
 
+let persons = data
+
 app.use(express.json())
 
 app.get('/', ( request, response ) => {
@@ -10,7 +12,7 @@ app.get('/', ( request, response ) => {
 
 app.get('/info', ( request, response ) => {
   response.send(`
-    <p>Phonebook has information for ${data.length} people.</p>
+    <p>Phonebook has information for ${persons.length} people.</p>
     <p>${new Date().toString()}</p>
     `)
 })
@@ -18,14 +20,19 @@ app.get('/info', ( request, response ) => {
 // API
 
 app.get('/api/persons', ( request, response ) => {
-  response.json(data)
+  response.json(persons)
 })
 
 app.get('/api/persons/:id', ( request, response ) => {
-  const person = data.find(p => p.id === request.params.id)
+  const person = persons.find(p => p.id === request.params.id)
 
   if (!person) return response.status(404).end()
   response.json(person)
+})
+
+app.delete('/api/persons/:id', ( request, response ) => {
+  persons = persons.filter(p => p.id !== request.params.id)
+  response.status(204).end()
 })
 
 const PORT = 80
