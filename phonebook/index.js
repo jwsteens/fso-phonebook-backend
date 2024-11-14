@@ -1,4 +1,5 @@
 import express from "express"
+import morgan from 'morgan'
 import data from './data.json' assert { type: 'json' }
 const app = express()
 
@@ -7,6 +8,7 @@ let persons = data
 const getRandomId = () => String(Math.floor(Math.random() * 999999999))
 
 app.use(express.json())
+app.use(morgan('tiny'))
 
 app.get('/', ( request, response ) => {
   response.send(`<h1>Hello, world!</h1>`)
