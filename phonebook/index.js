@@ -1,7 +1,9 @@
 import express from "express"
 import morgan from 'morgan'
 import cors from 'cors'
-import data from './data.json' assert { type: 'json' }
+import fs from 'fs'
+// import data from './data.json' assert { type: 'json' }
+const data = JSON.parse(fs.readFileSync('./data.json'))
 const app = express()
 
 let persons = data
