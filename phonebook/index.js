@@ -1,5 +1,6 @@
 import express from "express"
 import morgan from 'morgan'
+import cors from 'cors'
 import data from './data.json' assert { type: 'json' }
 const app = express()
 
@@ -8,6 +9,7 @@ let persons = data
 const getRandomId = () => String(Math.floor(Math.random() * 999999999))
 
 app.use(express.json())
+app.use(cors())
 
 morgan.token('json', (req) => {
   // Log the JSON body only for POST requests
@@ -62,5 +64,4 @@ app.post('/api/persons', ( request, response ) => {
   response.json(person)
 })
 
-const PORT = 80
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+app.listen(process.env.PORT || 3001, () => console.log(`Listening on port ${process.env.PORT || 3001}`))
