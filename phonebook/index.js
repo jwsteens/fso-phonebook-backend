@@ -12,6 +12,7 @@ const getRandomId = () => String(Math.floor(Math.random() * 999999999))
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('dist'))
 
 morgan.token('json', (req) => {
   // Log the JSON body only for POST requests
