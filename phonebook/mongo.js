@@ -1,8 +1,7 @@
 // node mongo.js password [name] [number]
 import mongoose from 'mongoose'
 
-const password = process.argv[2]
-const db_url = `mongodb+srv://Abnormaalz:${password}@cluster0.5jxbu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const db_url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery', false)
 mongoose.connect(db_url).then(() => {

@@ -1,7 +1,8 @@
-import express from "express"
-import morgan from 'morgan'
-import cors from 'cors'
-import fs from 'fs'
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
+const fs = require('fs')
+const Person = require('./models/person')
 // import data from './data.json' assert { type: 'json' }
 const data = JSON.parse(fs.readFileSync('./data.json'))
 const app = express()
@@ -34,14 +35,15 @@ app.get('/info', ( request, response ) => {
 // API
 
 app.get('/api/persons', ( request, response ) => {
-  response.json(persons)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', ( request, response ) => {
-  const person = persons.find(p => p.id === request.params.id)
-
-  if (!person) return response.status(404).end()
-  response.json(person)
+  const person = Person.find({ _id: request.params.id })
+  .then(person => {  response.json(person) })
+  .catch(error => { response.status(404).end() })
 })
 
 app.delete('/api/persons/:id', ( request, response ) => {
@@ -50,8 +52,10 @@ app.delete('/api/persons/:id', ( request, response ) => {
 })
 
 app.post('/api/persons', ( request, response ) => {
-  const person = request.body
-  person.id = getRandomId()
+  const person = new Person({
+    name: request.body.name,
+    number: request.body.number
+  })
 
   if (!person.name) return response.status(400).json({ error: "no name was given" })
   if (!person.number) return response.status(400).json({ error: "no number was given" })
