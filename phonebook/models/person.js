@@ -23,7 +23,13 @@ const personSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    minLength: 3
+    minLength: 8,
+    validate: {
+      validator: (v) => {
+        return /\d{2,3}-\d{1,}/.test(v)
+      },
+      message: props => `Phone number must be in the format 'xx-xxxxxx' or 'xxx-xxxxxx' and at least 8 characters long.`
+    }
   }
 })
 
