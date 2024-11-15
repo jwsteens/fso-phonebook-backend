@@ -23,10 +23,12 @@ token('json', (req) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json'))
 
 app.get('/info', ( request, response ) => {
-  response.send(`
-    <p>Phonebook has information for ${persons.length} people.</p>
-    <p>${new Date().toString()}</p>
-    `)
+  Person.find({}).then(persons => {
+    response.send(`
+      <p>Phonebook has information for ${persons.length} people.</p>
+      <p>${new Date().toString()}</p>
+      `)
+  })
 })
 
 // API
