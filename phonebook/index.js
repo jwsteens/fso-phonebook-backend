@@ -43,9 +43,18 @@ app.get('/api/persons/:id', ( request, response ) => {
   .catch(error => { response.status(404).end() })
 })
 
-app.delete('/api/persons/:id', ( request, response ) => {
-  persons = persons.filter(p => p.id !== request.params.id)
-  response.status(204).end()
+app.delete('/api/persons/:id', ( request, response, next ) => {
+  Person.findByIdAndDelete(request.params.id)
+  .then(result => { 
+    if (!result) {
+      next(new Error('Person not found'))
+      return response.status(404).end()
+    }
+    response.status(204).end()
+  })
+  .catch(error => next(error))
+  // persons = persons.filter(p => p.id !== request.params.id)
+  // response.status(204).end()
 })
 
 app.post('/api/persons', ( request, response ) => {
@@ -63,5 +72,17 @@ app.post('/api/persons', ( request, response ) => {
   // persons.push(person)
   // response.json(person)
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 app.listen(process.env.PORT || 3001, () => console.log(`Listening on port ${process.env.PORT || 3001}`))
