@@ -1,10 +1,9 @@
-const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-const fs = require('fs')
-const Person = require('./models/person')
-// import data from './data.json' assert { type: 'json' }
-const data = JSON.parse(fs.readFileSync('./data.json'))
+import express from 'express'
+import morgan, { token } from 'morgan'
+import cors from 'cors'
+import { readFileSync } from 'fs'
+import Person, { find } from './models/person'
+const data = JSON.parse(readFileSync('./data.json'))
 const app = express()
 
 let persons = data
@@ -15,7 +14,7 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
 
-morgan.token('json', (req) => {
+token('json', (req) => {
   // Log the JSON body only for POST requests
   if (req.method === 'POST' && req.body) {
     return JSON.stringify(req.body)
@@ -35,13 +34,13 @@ app.get('/info', ( request, response ) => {
 // API
 
 app.get('/api/persons', ( request, response ) => {
-  Person.find({}).then(persons => {
+  find({}).then(persons => {
     response.json(persons)
   })
 })
 
 app.get('/api/persons/:id', ( request, response ) => {
-  const person = Person.find({ _id: request.params.id })
+  find({ _id: request.params.id })
   .then(person => {  response.json(person) })
   .catch(error => { response.status(404).end() })
 })
