@@ -47,8 +47,9 @@ app.delete('/api/persons/:id', ( request, response, next ) => {
   Person.findByIdAndDelete(request.params.id)
   .then(result => { 
     if (!result) {
-      next(new Error('Person not found'))
-      return response.status(404).end()
+      const error = new Error('Person not found')
+      error.name = 'IndexError'
+      next(error)
     }
     response.status(204).end()
   })
@@ -74,10 +75,14 @@ app.post('/api/persons', ( request, response ) => {
 })
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.error(error)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  if (error.name === "IndexError") {
+    return response.status(404).send({ error: error.message })
   }
 
   next(error)
