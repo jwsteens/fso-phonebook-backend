@@ -2,13 +2,11 @@ import express from 'express'
 import morgan, { token } from 'morgan'
 import cors from 'cors'
 import { readFileSync } from 'fs'
-import Person, { find } from './models/person'
+import Person from './models/person.js'
 const data = JSON.parse(readFileSync('./data.json'))
 const app = express()
 
 let persons = data
-
-const getRandomId = () => String(Math.floor(Math.random() * 999999999))
 
 app.use(express.json())
 app.use(cors())
@@ -34,7 +32,7 @@ app.get('/info', ( request, response ) => {
 // API
 
 app.get('/api/persons', ( request, response ) => {
-  find({}).then(persons => {
+  Person.find({}).then(persons => {
     response.json(persons)
   })
 })
@@ -61,8 +59,9 @@ app.post('/api/persons', ( request, response ) => {
   if (persons.find(p => p.name === person.name)) return response.status(409).json({ error: "person with that name is already in phonebook" })
   if (persons.find(p => p.number === person.number)) return response.status(409).json({ error: "person with that number is already in phonebook" })
 
-  persons.push(person)
-  response.json(person)
+  person.save().then(savedPerson => { response.json(savedPerson) })
+  // persons.push(person)
+  // response.json(person)
 })
 
 app.listen(process.env.PORT || 3001, () => console.log(`Listening on port ${process.env.PORT || 3001}`))

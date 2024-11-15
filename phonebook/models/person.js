@@ -1,4 +1,5 @@
-require('dotenv').config()
+import dotenv from 'dotenv'
+dotenv.config()
 import { connect, Schema, model } from 'mongoose'
 const url = process.env.MONGODB_URI
 
