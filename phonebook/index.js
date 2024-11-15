@@ -24,11 +24,6 @@ morgan.token('json', (req) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json'))
 
-
-app.get('/', ( request, response ) => {
-  response.send(`<h1>Hello, world!</h1>`)
-})
-
 app.get('/info', ( request, response ) => {
   response.send(`
     <p>Phonebook has information for ${persons.length} people.</p>
