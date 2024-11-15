@@ -12,7 +12,20 @@ connect(url).then(result => {
     console.log('error connecting to MongoDB:', error.message)
   })
 
-const personSchema = new Schema({ name: String, number: String })
+const personSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    minLength: 3,
+    unique: true
+  },
+  number: {
+    type: String,
+    required: true,
+    unique: true,
+    minLength: 3
+  }
+})
 
 personSchema.set('toJSON', { transform: (document, returnedObject) => {
   returnedObject.id = returnedObject._id.toString()

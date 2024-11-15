@@ -56,11 +56,9 @@ app.delete('/api/persons/:id', ( request, response, next ) => {
     response.status(204).end()
   })
   .catch(error => next(error))
-  // persons = persons.filter(p => p.id !== request.params.id)
-  // response.status(204).end()
 })
 
-app.post('/api/persons', ( request, response ) => {
+app.post('/api/persons', ( request, response, next ) => {
   const person = new Person({
     name: request.body.name,
     number: request.body.number
@@ -68,12 +66,10 @@ app.post('/api/persons', ( request, response ) => {
 
   if (!person.name) return response.status(400).json({ error: "no name was given" })
   if (!person.number) return response.status(400).json({ error: "no number was given" })
-  if (persons.find(p => p.name === person.name)) return response.status(409).json({ error: "person with that name is already in phonebook" })
-  if (persons.find(p => p.number === person.number)) return response.status(409).json({ error: "person with that number is already in phonebook" })
 
-  person.save().then(savedPerson => { response.json(savedPerson) })
-  // persons.push(person)
-  // response.json(person)
+  person.save()
+  .then(savedPerson => { response.json(savedPerson) })
+  .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', ( request, response, next ) => {
@@ -82,7 +78,7 @@ app.put('/api/persons/:id', ( request, response, next ) => {
     number: request.body.number
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' })
   .then(updatedPerson => response.json(updatedPerson))
   .catch(error => next(error))
 })
@@ -96,6 +92,10 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "IndexError") {
     return response.status(404).send({ error: error.message })
+  }
+
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
